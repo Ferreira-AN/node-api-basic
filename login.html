@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Restrito</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #00254d, #005aa5);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 350px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        .logo span:nth-child(1) { color: #005aa5; }
+        .logo span:nth-child(2) { color: #4ca146; }
+        .logo span:nth-child(3) { color: #ffcc00; }
+        
+        h1 {
+            color: #00254d;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        input:focus {
+            border-color: #005aa5;
+            outline: none;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #005aa5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #004080;
+        }
+        
+        .error {
+            color: #c62828;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .info {
+            color: #666;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">
+            <span>QR</span><span>CODE</span><span> SYSTEM</span>
+        </div>
+        
+        <h1>🔐 Acesso Restrito</h1>
+        
+        <div class="error" id="error-message">
+            Senha incorreta!
+        </div>
+        
+        <input type="password" id="senha" placeholder="Digite a senha de acesso" autofocus>
+        
+        <button onclick="verificarSenha()">ENTRAR NO PAINEL</button>
+        
+        <div class="info">
+            Apenas pessoal autorizado<br>
+            Sistema de cadastro de clientes
+        </div>
+    </div>
+
+    <script>
+        // SENHA DEFINIDA AQUI (mude para a que você quiser)
+        const SENHA_CORRETA = "CadaPla26"; // <-- MUDE ESTA SENHA!
+        
+        function verificarSenha() {
+            const senhaDigitada = document.getElementById('senha').value;
+            const errorDiv = document.getElementById('error-message');
+            
+            if (senhaDigitada === SENHA_CORRETA) {
+                // Salva que está logado (por 8 horas)
+                localStorage.setItem('admin_logado', 'true');
+                localStorage.setItem('login_time', new Date().getTime());
+                
+                // Redireciona para o painel
+                window.location.href = 'admin.html';
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Senha incorreta!';
+                document.getElementById('senha').value = '';
+                document.getElementById('senha').focus();
+                
+                // Adiciona efeito visual de erro
+                document.getElementById('senha').style.borderColor = '#c62828';
+                setTimeout(() => {
+                    document.getElementById('senha').style.borderColor = '#ddd';
+                }, 1000);
+            }
+        }
+        
+        // Enter para enviar
+        document.getElementById('senha').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verificarSenha();
+            }
+        });
+        
+        // Se já estiver logado, redireciona direto
+        function verificarLogin() {
+            const logado = localStorage.getItem('admin_logado');
+            const loginTime = localStorage.getItem('login_time');
+            
+            if (logado === 'true' && loginTime) {
+                const agora = new Date().getTime();
+                const horasPassadas = (agora - parseInt(loginTime)) / (1000 * 60 * 60);
+                
+                // Expira após 8 horas
+                if (horasPassadas < 8) {
+                    window.location.href = 'admin.html';
+                } else {
+                    localStorage.removeItem('admin_logado');
+                    localStorage.removeItem('login_time');
+                }
+            }
+        }
+        
+        // Verifica ao carregar
+        verificarLogin();
+    </script>
+</body>
+</html>
