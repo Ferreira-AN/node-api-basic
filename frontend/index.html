@@ -1,0 +1,75 @@
+<!-- ARQUIVO: frontend/index.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de QR Codes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #00254d;
+            text-align: center;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        button {
+            background: #005aa5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #004080;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Sistema de Verificação por QR Code</h1>
+        
+        <div class="card">
+            <h2>📱 Como funciona:</h2>
+            <p>1. Cada cliente recebe um QR Code único</p>
+            <p>2. Ao escanear, mostra os dados do cliente</p>
+            <p>3. Verifica a validade do documento</p>
+        </div>
+
+        <div class="card">
+            <h2>🔍 Testar o sistema:</h2>
+            <p>Acesse um cliente de exemplo:</p>
+            <button onclick="window.location.href='/verificar/qr_123456789_abc123'">
+                Ver Cliente HELIO
+            </button>
+            <button onclick="window.location.href='/verificar/B2371187'">
+                Ver por RNM: B2371187
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>📊 Painel Admin (em breve)</h2>
+            <p>Em desenvolvimento: área para cadastrar novos clientes e gerar QR Codes</p>
+        </div>
+    </div>
+</body>
+</html>
