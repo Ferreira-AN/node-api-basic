@@ -190,6 +190,7 @@ app.get('/api/clientes', (req, res) => {
 
 app.listen(PORT, () => {
   console.log('='.repeat(50));
+  console.log(`Servidor rodando na porta ${PORT}`);
   console.log('🚀 SISTEMA DE QR CODE INICIADO');
   console.log('='.repeat(50));
   console.log(`📍 Porta: ${PORT}`);
