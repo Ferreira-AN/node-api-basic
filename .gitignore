@@ -21,3 +21,98 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+# =========================
+# Node.js
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Optional: keep lock files if you want reproducible builds
+# (recommended for production)
+#!package-lock.json
+#!yarn.lock
+#!pnpm-lock.yaml
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Runtime data
+# =========================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# =========================
+# Build / Output
+# =========================
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.tmp/
+.temp/
+
+# =========================
+# Coverage
+# =========================
+coverage/
+.nyc_output/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Editor / IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# HTML / Static files (optional ignores)
+# =========================
+# Uncomment if you generate/minify assets
+# *.min.js
+# *.min.css
+# *.map
+
+# =========================
+# Misc
+# =========================
+*.tgz
+*.gz
+*.zip
+
+# =========================
+# Docker (if used)
+# =========================
+.dockerignore
+
+# =========================
+# Local config
+# =========================
+.local
