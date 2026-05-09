@@ -1,56 +1,59 @@
-// ARQUIVO: backend/server.js - VERSÃO PARA RENDER
+// ARQUIVO: backend/server.js
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const QRCode = require('qrcode');
 
 const app = express();
-
-// ============================================
-// CONFIGURAÇÕES DINÂMICAS
-// ============================================
-
-// Porta automática (Render define, local usa 3000)
 const PORT = process.env.PORT || 3000;
 
-// URL automática - funciona em qualquer lugar
-function getSiteURL() {
-  // 1. Se estiver no Render
-  if (process.env.RENDER_EXTERNAL_URL) {
-    return process.env.RENDER_EXTERNAL_URL;
+// ============================================
+// CONFIGURAÇÃO DO BANCO DE DADOS
+// ============================================
+
+// Detectar se está no Render
+const isRender = process.env.RENDER === 'true' || process.env.RENDER_EXTERNAL_URL;
+
+let dbPath;
+
+if (isRender) {
+  // Render com Disco Persistente
+  const diskPath = '/opt/render/project/src/backend/database';
+  
+  // Criar a pasta se não existir
+  if (!fs.existsSync(diskPath)) {
+    fs.mkdirSync(diskPath, { recursive: true });
+    console.log(`📁 Pasta criada: ${diskPath}`);
   }
   
-  // 2. Se quiser testar com IP local (opcional)
-  if (process.env.LOCAL_IP) {
-    return `http://${process.env.LOCAL_IP}:${PORT}`;
+  dbPath = path.join(diskPath, 'clientes.db');
+  console.log(`🗄️ Render (Disco): ${dbPath}`);
+} else {
+  // Localhost
+  const localDbDir = path.join(__dirname, 'database');
+  if (!fs.existsSync(localDbDir)) {
+    fs.mkdirSync(localDbDir, { recursive: true });
   }
-  
-  // 3. Padrão: localhost
-  return `http://localhost:${PORT}`;
+  dbPath = path.join(localDbDir, 'clientes.db');
+  console.log(`🗄️ Local: ${dbPath}`);
 }
 
-const SITE_URL = getSiteURL();
-
-// ============================================
-// CONFIGURAÇÕES DO SERVIDOR
-// ============================================
-
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-// Conectar ao banco de dados
-const db = new sqlite3.Database('./database/clientes.db', (err) => {
+// Conectar ao banco
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error('Erro no banco de dados:', err);
+    console.error('❌ Erro no banco:', err.message);
   } else {
-    console.log('Banco de dados conectado!');
+    console.log('✅ Banco conectado!');
     criarTabelas();
   }
 });
 
-// Criar tabelas no banco
+// ============================================
+// CRIAR TABELAS
+// ============================================
+
 function criarTabelas() {
   db.run(`
     CREATE TABLE IF NOT EXISTS clientes (
@@ -67,33 +70,57 @@ function criarTabelas() {
       status VARCHAR(20) DEFAULT 'ativo',
       data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
-  `);
-  console.log('Tabela de clientes pronta!');
+  `, (err) => {
+    if (err) {
+      console.error('❌ Erro na tabela:', err.message);
+    } else {
+      console.log('✅ Tabela clientes pronta!');
+    }
+  });
 }
 
 // ============================================
-// ROTAS DA API
+// URL DO SITE
 // ============================================
 
+function getSiteURL() {
+  if (process.env.RENDER_EXTERNAL_URL) {
+    return process.env.RENDER_EXTERNAL_URL;
+  }
+  return `http://localhost:${PORT}`;
+}
 
-// ROTA: Página de login
-app.get('/login.html', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/login.html'));
-});
+const SITE_URL = getSiteURL();
 
-// ROTA: Painel admin (protegido pelo login.html)
-app.get('/admin.html', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/admin.html'));
-});
+// ============================================
+// CONFIGURAÇÕES DO SERVIDOR
+// ============================================
 
-// ROTA: Página inicial pública
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// ============================================
+// ROTAS
+// ============================================
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/login.html'));
+});
 
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/admin.html'));
+});
 
-// ROTA 1: Buscar cliente pelo código
+app.get('/verificar/:codigo', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
+});
+
+// API: Buscar cliente
 app.get('/api/cliente/:codigo', (req, res) => {
   const codigo = req.params.codigo;
   
@@ -103,35 +130,25 @@ app.get('/api/cliente/:codigo', (req, res) => {
       if (err) {
         res.status(500).json({ erro: err.message });
       } else if (cliente) {
-        res.json({ 
-          sucesso: true, 
-          cliente: cliente 
-        });
+        res.json({ sucesso: true, cliente });
       } else {
-        res.json({ 
-          sucesso: false, 
-          erro: 'Documento não encontrado' 
-        });
+        res.json({ sucesso: false, erro: 'Documento não encontrado' });
       }
     }
   );
 });
 
-// ROTA 2: Cadastrar novo cliente (VERSÃO CORRIGIDA)
+// API: Cadastrar cliente
 app.post('/api/clientes', async (req, res) => {
   try {
     const cliente = req.body;
     const codigoQR = 'qr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-    
-    // Validar dados obrigatórios
-    if (!cliente.nome || !cliente.sobrenome || !cliente.rnm) {
-      return res.status(400).json({ erro: 'Nome, sobrenome e RNM são obrigatórios' });
-    }
-
-    // ✅✅✅ LINK DINÂMICO - funciona local e no Render ✅✅✅
     const linkQR = `${SITE_URL}/verificar/${codigoQR}`;
     
-    // Inserir no banco
+    if (!cliente.nome || !cliente.sobrenome || !cliente.rnm) {
+      return res.status(400).json({ erro: 'Nome, sobrenome e RNM obrigatórios' });
+    }
+
     db.run(
       `INSERT INTO clientes (codigo_qr, nome, sobrenome, rnm, data_nascimento, nacionalidade, data_validade, email, telefone) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -148,10 +165,9 @@ app.post('/api/clientes', async (req, res) => {
       ],
       function(err) {
         if (err) {
-          return res.status(500).json({ erro: 'Erro ao salvar no banco: ' + err.message });
+          return res.status(500).json({ erro: 'Erro ao salvar: ' + err.message });
         }
         
-        // Gerar QR Code
         QRCode.toDataURL(linkQR, (err, qrData) => {
           if (err) {
             return res.status(500).json({ erro: 'Erro ao gerar QR Code' });
@@ -163,8 +179,7 @@ app.post('/api/clientes', async (req, res) => {
             cliente_id: this.lastID,
             codigo_qr: codigoQR,
             qr_code_image: qrData,
-            link_qr: linkQR,  // ✅ Link correto aqui!
-            site_url: SITE_URL // Para debug
+            link_qr: linkQR
           });
         });
       }
@@ -174,13 +189,13 @@ app.post('/api/clientes', async (req, res) => {
   }
 });
 
-// ROTA 3: Listar todos clientes
+// API: Listar clientes
 app.get('/api/clientes', (req, res) => {
-  db.all(`SELECT * FROM clientes ORDER BY data_cadastro DESC`, [], (err, clientes) => {
+  db.all('SELECT * FROM clientes ORDER BY id DESC', [], (err, clientes) => {
     if (err) {
-      return res.status(500).json({ erro: 'Erro ao buscar clientes' });
+      return res.status(500).json({ erro: err.message });
     }
-    res.json({ sucesso: true, clientes: clientes });
+    res.json({ sucesso: true, clientes });
   });
 });
 
@@ -190,22 +205,11 @@ app.get('/api/clientes', (req, res) => {
 
 app.listen(PORT, () => {
   console.log('='.repeat(50));
-  console.log(`Servidor rodando na porta ${PORT}`);
   console.log('🚀 SISTEMA DE QR CODE INICIADO');
   console.log('='.repeat(50));
   console.log(`📍 Porta: ${PORT}`);
   console.log(`🌐 URL: ${SITE_URL}`);
+  console.log(`🗄️ Banco: ${dbPath}`);
   console.log(`🔐 Admin: ${SITE_URL}/login.html`);
-  console.log(`📱 Validador: ${SITE_URL}/verificar/{codigo}`);
-  console.log(`📊 API: ${SITE_URL}/api/clientes`);
-  console.log('='.repeat(50));
-  
-  // Mostrar modo atual
-  if (process.env.RENDER_EXTERNAL_URL) {
-    console.log('✅ MODO: PRODUÇÃO (Render)');
-  } else {
-    console.log('🛠️  MODO: DESENVOLVIMENTO (Local)');
-  }
-  
   console.log('='.repeat(50));
 });
