@@ -158,7 +158,7 @@ app.post('/api/clientes', async (req, res) => {
   try {
     const cliente = req.body;
     const codigoQR = 'qr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-    const linkQR = `${SITE_URL}/verificar/${codigoQR}`;
+    const linkQR = `${SITE_URL}/validador?codigo=${codigoQR}`;
     
     if (!cliente.nome || !cliente.sobrenome || !cliente.rnm) {
       return res.status(400).json({ erro: 'Nome, sobrenome e RNM obrigatórios' });
