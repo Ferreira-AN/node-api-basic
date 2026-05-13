@@ -306,7 +306,25 @@
     // ============================================
     // FUNÇÕES
     // ============================================
+    // No início do script do cliente.html, adicione:
 
+function getCodigoDaURL() {
+  // Tenta pegar da query string ?codigo=xxx
+  const urlParams = new URLSearchParams(window.location.search);
+  let codigo = urlParams.get('codigo');
+  
+  // Se não tiver, tenta do path /verificar/xxx
+  if (!codigo) {
+    const path = window.location.pathname;
+    const partes = path.split('/');
+    if (partes.includes('verificar')) {
+      codigo = partes[partes.length - 1];
+    }
+  }
+  
+  return codigo;
+}
+    
     function getCodigoDaURL() {
       const caminho = window.location.pathname;
       const partes = caminho.split('/');
