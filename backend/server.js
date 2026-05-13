@@ -104,6 +104,21 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 // ROTAS
 // ============================================
 
+// Rota para o validador (página intermediária)
+app.get('/validador', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/validador.html'));
+});
+
+// Rota para a página do cliente (via query string)
+app.get('/cliente.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
+});
+
+// Rota antiga (mantém compatibilidade)
+app.get('/verificar/:codigo', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
