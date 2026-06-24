@@ -30,6 +30,8 @@
     .logo-img {
       width: 90px;
       height: auto;
+      background: transparent !important;
+      mix-blend-mode: multiply;
     }
 
     .titulo-principal {
@@ -77,24 +79,29 @@
       text-transform: uppercase;
     }
 
+    /* BOTÃO VOLTAR - FUNDO CINZA APENAS NA METADE */
+    .voltar-wrapper {
+      text-align: center;
+      margin-top: 10px;
+    }
+
     .voltar-btn {
-      display: block;
-      width: 120px;
-      background: #e0e0e0;
-      color: #444;
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(to right, #e0e0e0 50%, transparent 50%);
+      color: #333;
       border: none;
-      padding: 11px;
-      border-radius: 6px;
+      border-radius: 4px;
       font-size: 15px;
+      font-weight: 500;
       text-align: center;
       cursor: pointer;
-      margin: 0 auto;
-      font-weight: 500;
       text-decoration: none;
+      transition: background 0.2s;
     }
 
     .voltar-btn:hover {
-      background: #d0d0d0;
+      background: linear-gradient(to right, #d0d0d0 50%, transparent 50%);
     }
 
     .loading {
@@ -157,7 +164,9 @@
       </div>
     </div>
 
-    <a href="javascript:history.back()" class="voltar-btn">Voltar</a>
+    <div class="voltar-wrapper">
+      <a href="javascript:history.back()" class="voltar-btn">Voltar</a>
+    </div>
   </div>
 
   <script>
@@ -212,7 +221,6 @@
           document.getElementById('nascimento').textContent = formatarData(c.data_nascimento);
           document.getElementById('nacionalidade').textContent = c.nacionalidade ? capitalizar(c.nacionalidade) : '-';
 
-          // Limpa a URL — mostra só o domínio
           window.history.replaceState({}, '', '/');
 
         } else {
