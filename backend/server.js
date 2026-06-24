@@ -119,8 +119,9 @@ app.get('/verificar/:codigo', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
 });
 
+// Redireciona a raiz direto para o admin (sem aparecer /admin.html na URL)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(__dirname, '../frontend/admin.html'));
 });
 
 app.get('/login.html', (req, res) => {
@@ -129,10 +130,6 @@ app.get('/login.html', (req, res) => {
 
 app.get('/admin.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/admin.html'));
-});
-
-app.get('/verificar/:codigo', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
 });
 
 // API: Buscar cliente
