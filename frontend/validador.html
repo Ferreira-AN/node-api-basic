@@ -125,11 +125,9 @@
       background: #d0d0d0;
     }
 
+    /* LOADING REMOVIDO - não será mais exibido */
     .loading {
-      display: none;
-      margin: 12px 0;
-      color: #4d8bf2;
-      font-size: 13px;
+      display: none !important; /* FORÇA A REMOÇÃO */
     }
 
     .error-message {
@@ -218,7 +216,6 @@
          onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Bras%C3%A3o_PF_Brasil.svg/200px-Bras%C3%A3o_PF_Brasil.svg.png'">
   </div>
 
-  <!-- TÍTULO COM QUEBRA DE TEXTO -->
   <div class="titulo-validador">Validador de autenticidade<br>de documento</div>
 
   <div class="codigo-wrapper">
@@ -232,7 +229,8 @@
     <button class="btn-limpar" onclick="limparCampo()">Limpar</button>
   </div>
 
-  <div id="loading" class="loading">⏳ Validando...</div>
+  <!-- LOADING REMOVIDO -->
+  <div id="loading" class="loading"></div>
   <div id="errorMessage" class="error-message">❌ Documento não encontrado</div>
 </div>
 
@@ -263,7 +261,7 @@
       return;
     }
 
-    document.getElementById('loading').style.display = 'block';
+    // LOADING REMOVIDO - não exibe mais nada
     document.getElementById('errorMessage').style.display = 'none';
 
     try {
@@ -277,8 +275,6 @@
       }
     } catch (erro) {
       mostrarErro('Erro de conexão');
-    } finally {
-      document.getElementById('loading').style.display = 'none';
     }
   }
 
