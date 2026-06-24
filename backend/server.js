@@ -98,6 +98,10 @@ const SITE_URL = getSiteURL();
 
 app.use(cors());
 app.use(express.json());
+// Redireciona a raiz direto para o admin (sem aparecer /admin.html na URL)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/admin.html'));
+});
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // ============================================
@@ -117,11 +121,6 @@ app.get('/cliente.html', (req, res) => {
 // Rota antiga (mantém compatibilidade)
 app.get('/verificar/:codigo', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
-});
-
-// Redireciona a raiz direto para o admin (sem aparecer /admin.html na URL)
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/admin.html'));
 });
 
 app.get('/login.html', (req, res) => {
