@@ -83,10 +83,17 @@ function criarTabelas() {
 // URL DO SITE
 // ============================================
 
+// DEPOIS (CORRIGIDO)
 function getSiteURL() {
+  // 1. Se tiver domínio personalizado configurado, usa ele
+  if (process.env.CUSTOM_DOMAIN) {
+    return `https://${process.env.CUSTOM_DOMAIN}`;
+  }
+  // 2. Se estiver no Render com domínio padrão
   if (process.env.RENDER_EXTERNAL_URL) {
     return process.env.RENDER_EXTERNAL_URL;
   }
+  // 3. Localhost
   return `http://localhost:${PORT}`;
 }
 
