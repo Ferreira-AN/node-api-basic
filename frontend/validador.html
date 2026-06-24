@@ -28,7 +28,6 @@
       text-align: center;
     }
 
-    /* Logo PF */
     .logo {
       margin: 12px 0 10px;
     }
@@ -38,7 +37,6 @@
       height: auto;
     }
 
-    /* Título */
     .titulo-validador {
       font-size: 20px;
       font-weight: 700;
@@ -48,7 +46,6 @@
       text-align: center;
     }
 
-    /* Campo do código */
     .codigo-wrapper {
       position: relative;
       width: 100%;
@@ -86,11 +83,10 @@
       box-shadow: 0 0 0 3px rgba(77, 139, 242, 0.15);
     }
 
-    /* Botões - COM GAP REDUZIDO */
     .buttons {
       display: flex;
       justify-content: center;
-      gap: 6px; /* REDUZIDO de 12px para 6px */
+      gap: 6px;
       width: 100%;
       margin: 0 auto 10px auto;
     }
@@ -129,7 +125,6 @@
       background: #d0d0d0;
     }
 
-    /* Loading e erro */
     .loading {
       display: none;
       margin: 12px 0;
@@ -151,46 +146,37 @@
       margin-right: auto;
     }
 
-    /* Responsividade */
     @media (max-width: 480px) {
       body {
         padding: 20px 14px 14px 14px;
       }
-
       .container {
         max-width: 100%;
       }
-
       .logo-img {
         width: 180px;
       }
-
       .titulo-validador {
         font-size: 18px;
         margin-bottom: 16px;
       }
-
       .codigo-wrapper {
         max-width: 300px;
         margin-bottom: 8px;
       }
-
       .codigo-input {
         font-size: 12px;
         padding: 24px 10px 8px 10px;
       }
-
       .buttons {
-        gap: 5px; /* REDUZIDO para mobile */
+        gap: 5px;
       }
-
       .btn-validar,
       .btn-limpar {
         font-size: 13px;
         padding: 7px 16px;
         min-width: 65px;
       }
-
       .error-message {
         max-width: 300px;
       }
@@ -200,21 +186,17 @@
       .logo-img {
         width: 150px;
       }
-
       .titulo-validador {
         font-size: 16px;
       }
-
       .codigo-wrapper {
         max-width: 260px;
       }
-
       .buttons {
         gap: 4px;
         flex-direction: column;
         align-items: center;
       }
-
       .btn-validar,
       .btn-limpar {
         width: 100%;
@@ -222,7 +204,6 @@
         min-width: unset;
         padding: 8px;
       }
-
       .error-message {
         max-width: 260px;
       }
@@ -232,35 +213,30 @@
 <body>
 
 <div class="container">
-  <!-- Logo PF -->
   <div class="logo">
     <img src="Federal.png" class="logo-img" alt="PF"
          onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Bras%C3%A3o_PF_Brasil.svg/200px-Bras%C3%A3o_PF_Brasil.svg.png'">
   </div>
 
-  <!-- Título -->
-  <div class="titulo-validador">Validador de autenticidade de documento</div>
+  <!-- TÍTULO COM QUEBRA DE TEXTO -->
+  <div class="titulo-validador">Validador de autenticidade<br>de documento</div>
 
-  <!-- Campo do código -->
   <div class="codigo-wrapper">
     <div class="codigo-label">Código Verificador</div>
     <input type="text" id="codigoInput" class="codigo-input"
            placeholder="dR213y70-8686-f308-11p8-95d58edk11yf" autocomplete="off">
   </div>
 
-  <!-- Botões - COM GAP REDUZIDO -->
   <div class="buttons">
     <button class="btn-validar" onclick="validarCodigo()">Validar</button>
     <button class="btn-limpar" onclick="limparCampo()">Limpar</button>
   </div>
 
-  <!-- Loading e Erro -->
   <div id="loading" class="loading">⏳ Validando...</div>
   <div id="errorMessage" class="error-message">❌ Documento não encontrado</div>
 </div>
 
 <script>
-  // Pegar código da URL
   function getCodigoDaURL() {
     const urlParams = new URLSearchParams(window.location.search);
     let codigo = urlParams.get('codigo');
@@ -275,7 +251,6 @@
     return codigo;
   }
 
-  // Validar código
   async function validarCodigo() {
     let codigo = document.getElementById('codigoInput').value.trim();
 
