@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -189,6 +190,8 @@
       const resposta = await fetch(`/api/cliente/${encodeURIComponent(codigo)}`);
       const dados = await resposta.json();
       if (dados.sucesso && dados.cliente) {
+        // ✅ LIMPA O CAMPO ANTES DE REDIRECIONAR
+        document.getElementById('codigoInput').value = '';
         window.location.href = `/cliente.html?codigo=${encodeURIComponent(codigo)}`;
       } else {
         mostrarErro('Documento não encontrado');
