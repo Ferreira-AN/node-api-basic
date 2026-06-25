@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Polícia Federal - Validador</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
@@ -22,19 +18,14 @@
       padding: 30px 16px 16px 16px;
     }
 
-    .container {
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-    }
+    .container { max-width: 400px; width: 100%; text-align: center; }
 
-    .logo {
-      margin: 12px 0 10px;
-    }
+    .logo { margin: 12px 0 10px; }
 
     .logo-img {
       width: 220px;
       height: auto;
+      mix-blend-mode: multiply;
     }
 
     .titulo-validador {
@@ -69,11 +60,10 @@
       padding: 26px 12px 10px 12px;
       font-size: 13px;
       font-family: monospace;
-      border: 1.5px solid #ccc;
+      border: 1.5px solid #4d8bf2;
       border-radius: 8px;
       background: #f9f9f9;
       color: #222;
-      transition: border-color 0.3s;
     }
 
     .codigo-input:focus {
@@ -100,13 +90,10 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
       min-width: 80px;
     }
 
-    .btn-validar:hover {
-      background: #3a7ae0;
-    }
+    .btn-validar:hover { background: #3a7ae0; }
 
     .btn-limpar {
       padding: 8px 22px;
@@ -117,22 +104,16 @@
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s;
       min-width: 80px;
     }
 
-    .btn-limpar:hover {
-      background: #d0d0d0;
-    }
+    .btn-limpar:hover { background: #d0d0d0; }
 
-    /* LOADING REMOVIDO - não será mais exibido */
-    .loading {
-      display: none !important; /* FORÇA A REMOÇÃO */
-    }
+    .loading { display: none !important; }
 
     .error-message {
       display: none;
-      margin: 12px 0;
+      margin: 12px auto;
       padding: 10px;
       background: #ffebee;
       color: #c62828;
@@ -140,76 +121,31 @@
       font-size: 13px;
       width: 100%;
       max-width: 340px;
-      margin-left: auto;
-      margin-right: auto;
     }
 
     @media (max-width: 480px) {
-      body {
-        padding: 20px 14px 14px 14px;
-      }
-      .container {
-        max-width: 100%;
-      }
-      .logo-img {
-        width: 180px;
-      }
-      .titulo-validador {
-        font-size: 18px;
-        margin-bottom: 16px;
-      }
-      .codigo-wrapper {
-        max-width: 300px;
-        margin-bottom: 8px;
-      }
-      .codigo-input {
-        font-size: 12px;
-        padding: 24px 10px 8px 10px;
-      }
-      .buttons {
-        gap: 5px;
-      }
-      .btn-validar,
-      .btn-limpar {
-        font-size: 13px;
-        padding: 7px 16px;
-        min-width: 65px;
-      }
-      .error-message {
-        max-width: 300px;
-      }
+      body { padding: 20px 14px 14px 14px; }
+      .container { max-width: 100%; }
+      .logo-img { width: 180px; }
+      .titulo-validador { font-size: 18px; margin-bottom: 16px; }
+      .codigo-wrapper { max-width: 300px; margin-bottom: 8px; }
+      .codigo-input { font-size: 12px; padding: 24px 10px 8px 10px; }
+      .buttons { gap: 5px; }
+      .btn-validar, .btn-limpar { font-size: 13px; padding: 7px 16px; min-width: 65px; }
+      .error-message { max-width: 300px; }
     }
 
     @media (max-width: 380px) {
-      .logo-img {
-        width: 150px;
-      }
-      .titulo-validador {
-        font-size: 16px;
-      }
-      .codigo-wrapper {
-        max-width: 260px;
-      }
-      .buttons {
-        gap: 4px;
-        flex-direction: column;
-        align-items: center;
-      }
-      .btn-validar,
-      .btn-limpar {
-        width: 100%;
-        max-width: 180px;
-        min-width: unset;
-        padding: 8px;
-      }
-      .error-message {
-        max-width: 260px;
-      }
+      .logo-img { width: 150px; }
+      .titulo-validador { font-size: 16px; }
+      .codigo-wrapper { max-width: 260px; }
+      .buttons { gap: 4px; flex-direction: column; align-items: center; }
+      .btn-validar, .btn-limpar { width: 100%; max-width: 180px; min-width: unset; padding: 8px; }
+      .error-message { max-width: 260px; }
     }
   </style>
 </head>
 <body>
-
 <div class="container">
   <div class="logo">
     <img src="Federal.png" class="logo-img" alt="PF"
@@ -229,7 +165,6 @@
     <button class="btn-limpar" onclick="limparCampo()">Limpar</button>
   </div>
 
-  <!-- LOADING REMOVIDO -->
   <div id="loading" class="loading"></div>
   <div id="errorMessage" class="error-message">❌ Documento não encontrado</div>
 </div>
@@ -238,36 +173,24 @@
   function getCodigoDaURL() {
     const urlParams = new URLSearchParams(window.location.search);
     let codigo = urlParams.get('codigo');
-
     if (!codigo) {
       const path = window.location.pathname;
       const partes = path.split('/');
-      if (partes.includes('verificar')) {
-        codigo = partes[partes.length - 1];
-      }
+      if (partes.includes('verificar')) codigo = partes[partes.length - 1];
     }
     return codigo;
   }
 
   async function validarCodigo() {
     let codigo = document.getElementById('codigoInput').value.trim();
+    if (!codigo) codigo = getCodigoDaURL();
+    if (!codigo) { mostrarErro('Digite o código do documento'); return; }
 
-    if (!codigo) {
-      codigo = getCodigoDaURL();
-    }
-
-    if (!codigo) {
-      mostrarErro('Digite o código do documento');
-      return;
-    }
-
-    // LOADING REMOVIDO - não exibe mais nada
     document.getElementById('errorMessage').style.display = 'none';
 
     try {
       const resposta = await fetch(`/api/cliente/${encodeURIComponent(codigo)}`);
       const dados = await resposta.json();
-
       if (dados.sucesso && dados.cliente) {
         window.location.href = `/cliente.html?codigo=${encodeURIComponent(codigo)}`;
       } else {
@@ -292,9 +215,7 @@
 
   document.addEventListener('DOMContentLoaded', function() {
     const codigoURL = getCodigoDaURL();
-    if (codigoURL) {
-      document.getElementById('codigoInput').value = codigoURL;
-    }
+    if (codigoURL) document.getElementById('codigoInput').value = codigoURL;
   });
 
   document.getElementById('codigoInput').addEventListener('keypress', function(e) {
