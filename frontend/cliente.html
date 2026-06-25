@@ -30,8 +30,6 @@
     .logo-img {
       width: 90px;
       height: auto;
-      background: transparent !important;
-      mix-blend-mode: multiply;
     }
 
     .titulo-principal {
@@ -79,29 +77,24 @@
       text-transform: uppercase;
     }
 
-    /* BOTÃO VOLTAR - FUNDO CINZA APENAS NA METADE */
-    .voltar-wrapper {
-      text-align: center;
-      margin-top: 10px;
-    }
-
     .voltar-btn {
-      display: inline-block;
-      padding: 8px 16px;
-      background: linear-gradient(to right, #e0e0e0 50%, transparent 50%);
-      color: #333;
+      display: block;
+      width: 120px;
+      background: #e0e0e0;
+      color: #444;
       border: none;
-      border-radius: 4px;
+      padding: 11px;
+      border-radius: 6px;
       font-size: 15px;
-      font-weight: 500;
       text-align: center;
       cursor: pointer;
+      margin: 0 auto;
+      font-weight: 500;
       text-decoration: none;
-      transition: background 0.2s;
     }
 
     .voltar-btn:hover {
-      background: linear-gradient(to right, #d0d0d0 50%, transparent 50%);
+      background: #d0d0d0;
     }
 
     .loading {
@@ -126,8 +119,8 @@
 <body>
   <div class="container">
     <div class="logo">
-    <img src="Federal.png" class="logo-img" alt="PF"
-         onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Bras%C3%A3o_PF_Brasil.svg/200px-Bras%C3%A3o_PF_Brasil.svg.png'">
+      <img src="/Federal.png" class="logo-img"
+           onerror="this.onerror=null; this.src='/PF.jpg';">
     </div>
 
     <div class="titulo-principal">Documento autêntico</div>
@@ -164,9 +157,7 @@
       </div>
     </div>
 
-    <div class="voltar-wrapper">
-      <a href="javascript:history.back()" class="voltar-btn">Voltar</a>
-    </div>
+    <a href="/validador" class="voltar-btn">Voltar</a>
   </div>
 
   <script>
@@ -221,6 +212,7 @@
           document.getElementById('nascimento').textContent = formatarData(c.data_nascimento);
           document.getElementById('nacionalidade').textContent = c.nacionalidade ? capitalizar(c.nacionalidade) : '-';
 
+          // Limpa a URL — mostra só o domínio
           window.history.replaceState({}, '', '/');
 
         } else {
