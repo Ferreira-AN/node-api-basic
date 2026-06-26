@@ -83,6 +83,7 @@ function criarTabelas() {
 // URL DO SITE
 // ============================================
 
+// DEPOIS (CORRIGIDO)
 function getSiteURL() {
   // 1. Se tiver domínio personalizado configurado, usa ele
   if (process.env.CUSTOM_DOMAIN) {
@@ -104,16 +105,15 @@ const SITE_URL = getSiteURL();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-// ============================================
-// ROTAS DAS PÁGINAS
-// ============================================
-
-// Redireciona a raiz direto para o admin
+// Redireciona a raiz direto para o admin (sem aparecer /admin.html na URL)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/admin.html'));
 });
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// ============================================
+// ROTAS
+// ============================================
 
 // Rota para o validador (página intermediária)
 app.get('/validador', (req, res) => {
@@ -137,10 +137,6 @@ app.get('/login.html', (req, res) => {
 app.get('/admin.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/admin.html'));
 });
-
-// ============================================
-// ROTAS DA API
-// ============================================
 
 // API: Buscar cliente
 app.get('/api/cliente/:codigo', (req, res) => {
@@ -211,47 +207,6 @@ app.post('/api/clientes', async (req, res) => {
   }
 });
 
-// ============================================
-// ⭐ NOVA ROTA: Editar cliente (PUT)
-// ============================================
-
-app.put('/api/clientes/:id', (req, res) => {
-    const id = req.params.id;
-    const { nome, sobrenome, rnm, data_nascimento, nacionalidade, data_validade, email, telefone } = req.body;
-
-    // Validação
-    if (!nome || !sobrenome || !rnm) {
-        return res.status(400).json({ erro: 'Nome, sobrenome e RNM obrigatórios' });
-    }
-
-    db.run(
-        `UPDATE clientes SET
-            nome = ?,
-            sobrenome = ?,
-            rnm = ?,
-            data_nascimento = ?,
-            nacionalidade = ?,
-            data_validade = ?,
-            email = ?,
-            telefone = ?
-        WHERE id = ?`,
-        [nome, sobrenome, rnm, data_nascimento, nacionalidade, data_validade, email, telefone, id],
-        function(err) {
-            if (err) {
-                return res.status(500).json({ erro: 'Erro ao atualizar: ' + err.message });
-            }
-            if (this.changes === 0) {
-                return res.status(404).json({ erro: 'Cliente não encontrado' });
-            }
-            res.json({ 
-                sucesso: true, 
-                mensagem: 'Cliente atualizado com sucesso!',
-                id: id
-            });
-        }
-    );
-});
-
 // API: Listar clientes
 app.get('/api/clientes', (req, res) => {
   db.all('SELECT * FROM clientes ORDER BY id DESC', [], (err, clientes) => {
@@ -274,6 +229,5 @@ app.listen(PORT, () => {
   console.log(`🌐 URL: ${SITE_URL}`);
   console.log(`🗄️ Banco: ${dbPath}`);
   console.log(`🔐 Admin: ${SITE_URL}/login.html`);
-  console.log(`📋 API: ${SITE_URL}/api/clientes`);
   console.log('='.repeat(50));
 });
