@@ -217,6 +217,49 @@ app.get('/api/clientes', (req, res) => {
   });
 });
 
+// ⭐ NOVA ROTA: Editar cliente (PUT)
+app.put('/api/clientes/:id', (req, res) => {
+    const id = req.params.id;
+    const { nome, sobrenome, rnm, data_nascimento, nacionalidade, data_validade, email, telefone } = req.body;
+
+    console.log(`📝 Editando cliente ID: ${id}`);
+    console.log('📤 Dados recebidos:', req.body);
+
+    if (!nome || !sobrenome || !rnm) {
+        return res.status(400).json({ erro: 'Nome, sobrenome e RNM obrigatórios' });
+    }
+
+    db.run(
+        `UPDATE clientes SET
+            nome = ?,
+            sobrenome = ?,
+            rnm = ?,
+            data_nascimento = ?,
+            nacionalidade = ?,
+            data_validade = ?,
+            email = ?,
+            telefone = ?
+        WHERE id = ?`,
+        [nome, sobrenome, rnm, data_nascimento, nacionalidade, data_validade, email, telefone, id],
+        function(err) {
+            if (err) {
+                console.error('❌ Erro no UPDATE:', err.message);
+                return res.status(500).json({ erro: 'Erro ao atualizar: ' + err.message });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ erro: 'Cliente não encontrado' });
+            }
+            console.log(`✅ Cliente ${id} atualizado com sucesso!`);
+            res.json({ 
+                sucesso: true, 
+                mensagem: 'Cliente atualizado com sucesso!',
+                id: id
+            });
+        }
+    );
+});
+
+
 // ============================================
 // INICIAR SERVIDOR
 // ============================================
