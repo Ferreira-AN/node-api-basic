@@ -77,6 +77,11 @@
         }
         .btn-salvar-edicao:hover { background: #218838; }
 
+        .btn-cancelar-edicao {
+            background: #dc3545;
+        }
+        .btn-cancelar-edicao:hover { background: #c82333; }
+
         .qr-result {
             text-align: center;
             padding: 20px;
@@ -160,6 +165,7 @@
 
         .editar-form button {
             margin-right: 10px;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -356,7 +362,7 @@
         }
 
         // ============================================
-        // EDITAR CLIENTE
+        // EDITAR CLIENTE (COM FEEDBACK)
         // ============================================
 
         function abrirEdicao(id) {
@@ -382,7 +388,15 @@
                 telefone: document.getElementById(`edit-telefone-${id}`).value.trim()
             };
 
+            // Validação
+            if (!cliente.nome || !cliente.sobrenome || !cliente.rnm) {
+                showError('Nome, sobrenome e RNM são obrigatórios');
+                return;
+            }
+
             try {
+                showSuccess('Salvando alterações...');
+
                 const response = await fetch(`/api/clientes/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -392,14 +406,23 @@
                 const result = await response.json();
 
                 if (result.sucesso) {
-                    showSuccess('Cliente atualizado com sucesso!');
+                    showSuccess('✅ Cliente atualizado com sucesso!');
+                    // Fecha o formulário de edição
+                    document.getElementById(`editar-form-${id}`).classList.remove('ativo');
+                    // Recarrega a lista
                     carregarClientes();
                 } else {
                     showError(result.erro || 'Erro ao atualizar cliente');
                 }
             } catch (error) {
+                console.error('Erro:', error);
                 showError('Erro de conexão: ' + error.message);
             }
+        }
+
+        function cancelarEdicao(id) {
+            document.getElementById(`editar-form-${id}`).classList.remove('ativo');
+            showSuccess('Edição cancelada');
         }
 
         // ============================================
@@ -433,9 +456,13 @@
                             <tbody>`;
 
                         result.clientes.forEach(cliente => {
+                            // Formata a data para o input date (YYYY-MM-DD)
+                            const dataNascimento = cliente.data_nascimento || '';
+                            const dataValidade = cliente.data_validade || '';
+
                             html += `
                                 <tr>
-                                    <td>${cliente.nome} ${cliente.sobrenome}</td>
+                                    <td><strong>${cliente.nome} ${cliente.sobrenome}</strong></td>
                                     <td>${cliente.rnm || '-'}</td>
                                     <td>${cliente.nacionalidade || '-'}</td>
                                     <td>${formatarData(cliente.data_validade)}</td>
@@ -449,7 +476,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="5">
+                                    <td colspan="5" style="padding: 0;">
                                         <div class="editar-form" id="editar-form-${cliente.id}">
                                             <h4 style="margin-bottom: 10px; color:#005aa5;">✏️ Editando ${cliente.nome} ${cliente.sobrenome}</h4>
                                             <div class="form-grid">
@@ -467,7 +494,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Nascimento</label>
-                                                    <input type="date" id="edit-data_nascimento-${cliente.id}" value="${cliente.data_nascimento || ''}">
+                                                    <input type="date" id="edit-data_nascimento-${cliente.id}" value="${dataNascimento}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Nacionalidade</label>
@@ -475,7 +502,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Validade</label>
-                                                    <input type="date" id="edit-data_validade-${cliente.id}" value="${cliente.data_validade || ''}">
+                                                    <input type="date" id="edit-data_validade-${cliente.id}" value="${dataValidade}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label>E-mail</label>
@@ -486,8 +513,10 @@
                                                     <input type="tel" id="edit-telefone-${cliente.id}" value="${cliente.telefone || ''}">
                                                 </div>
                                             </div>
-                                            <button class="btn-salvar-edicao" onclick="salvarEdicao(${cliente.id})">💾 Salvar Alterações</button>
-                                            <button onclick="abrirEdicao(${cliente.id})">❌ Cancelar</button>
+                                            <div style="margin-top: 15px;">
+                                                <button class="btn-salvar-edicao" onclick="salvarEdicao(${cliente.id})">💾 Salvar Alterações</button>
+                                                <button class="btn-cancelar-edicao" onclick="cancelarEdicao(${cliente.id})">❌ Cancelar</button>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -500,7 +529,7 @@
                 }
             } catch (error) {
                 console.error('Erro ao carregar:', error);
-                document.getElementById('lista-clientes').innerHTML = '<p>Erro ao carregar clientes. Verifique se o servidor está rodando.</p>';
+                document.getElementById('lista-clientes').innerHTML = '<p>❌ Erro ao carregar clientes. Verifique se o servidor está rodando.</p>';
             }
         }
 
@@ -522,15 +551,15 @@
             alert.textContent = mensagem;
             alert.style.display = 'block';
             document.getElementById('alert-error').style.display = 'none';
-            setTimeout(() => alert.style.display = 'none', 3000);
+            setTimeout(() => alert.style.display = 'none', 4000);
         }
 
         function showError(mensagem) {
             const alert = document.getElementById('alert-error');
-            alert.textContent = mensagem;
+            alert.textContent = '❌ ' + mensagem;
             alert.style.display = 'block';
             document.getElementById('alert-success').style.display = 'none';
-            setTimeout(() => alert.style.display = 'none', 4000);
+            setTimeout(() => alert.style.display = 'none', 5000);
         }
 
         function copiarLink() {
