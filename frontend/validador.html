@@ -9,7 +9,7 @@
 
     body {
       font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: #e8e8e8;
+      background: #f0f0f0; /* UM POUCO MAIS ESCURO */
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -39,15 +39,15 @@
     .codigo-wrapper {
       position: relative;
       width: 100%;
-      max-width: 280px;
+      max-width: 300px; /* REDUZIDO */
       margin: 0 auto 10px auto;
     }
 
     .codigo-label {
       position: absolute;
-      top: 8px;
-      left: 12px;
-      font-size: 11px;
+      top: 6px;
+      left: 10px;
+      font-size: 10px;
       color: #888;
       font-weight: 500;
       pointer-events: none;
@@ -56,19 +56,19 @@
 
     .codigo-input {
       width: 100%;
-      padding: 26px 12px 10px 12px;
-      font-size: 13px;
+      padding: 22px 10px 8px 10px; /* REDUZIDO */
+      font-size: 12px; /* REDUZIDO */
       font-family: monospace;
       border: 1.5px solid #4d8bf2;
       border-radius: 8px;
-      background: #f0f0f0;
+      background: #f9f9f9;
       color: #222;
     }
 
     .codigo-input:focus {
       outline: none;
       border-color: #4d8bf2;
-      background: #e8e8e8;
+      background: white;
       box-shadow: 0 0 0 3px rgba(77, 139, 242, 0.15);
     }
 
@@ -96,17 +96,18 @@
 
     .btn-limpar {
       padding: 8px 22px;
-      background: #4d8bf2;
+      background: #4d8bf2; /* MESMA COR DO VALIDAR */
       color: white;
       border: none;
       border-radius: 8px;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       min-width: 80px;
     }
 
-    .btn-limpar:hover { background: #d0d0d0; }
+    .btn-limpar:hover { background: #3a7ae0; }
+
     .loading { display: none !important; }
 
     .error-message {
@@ -118,7 +119,7 @@
       border-radius: 6px;
       font-size: 13px;
       width: 100%;
-      max-width: 280px;
+      max-width: 300px; /* ACOMPANHA A CAIXA */
     }
 
     @media (max-width: 480px) {
@@ -126,20 +127,20 @@
       .container { max-width: 100%; }
       .logo-img { width: 180px; }
       .titulo-validador { font-size: 18px; margin-bottom: 16px; }
-      .codigo-wrapper { max-width: 240px; margin-bottom: 8px; }
-      .codigo-input { font-size: 12px; padding: 24px 10px 8px 10px; }
+      .codigo-wrapper { max-width: 270px; }
+      .codigo-input { font-size: 11px; padding: 20px 8px 6px 8px; }
       .buttons { gap: 5px; }
       .btn-validar, .btn-limpar { font-size: 13px; padding: 7px 16px; min-width: 65px; }
-      .error-message { max-width: 240px; }
+      .error-message { max-width: 270px; }
     }
 
     @media (max-width: 380px) {
       .logo-img { width: 150px; }
       .titulo-validador { font-size: 16px; }
-      .codigo-wrapper { max-width: 210px; }
+      .codigo-wrapper { max-width: 230px; }
       .buttons { gap: 4px; flex-direction: column; align-items: center; }
       .btn-validar, .btn-limpar { width: 100%; max-width: 180px; min-width: unset; padding: 8px; }
-      .error-message { max-width: 210px; }
+      .error-message { max-width: 230px; }
     }
   </style>
 </head>
@@ -189,6 +190,7 @@
       const resposta = await fetch(`/api/cliente/${encodeURIComponent(codigo)}`);
       const dados = await resposta.json();
       if (dados.sucesso && dados.cliente) {
+        document.getElementById('codigoInput').value = '';
         window.location.href = `/cliente.html?codigo=${encodeURIComponent(codigo)}`;
       } else {
         mostrarErro('Documento não encontrado');
