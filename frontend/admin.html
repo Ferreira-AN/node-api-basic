@@ -7,23 +7,23 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        
-        header { 
-            background: #00254d; 
-            color: white; 
-            padding: 20px; 
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header {
+            background: #00254d;
+            color: white;
+            padding: 20px;
             border-radius: 10px 10px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo { font-size: 24px; font-weight: bold; }
         .logo span:nth-child(1) { color: #005aa5; }
         .logo span:nth-child(2) { color: #4ca146; }
         .logo span:nth-child(3) { color: #ffcc00; }
-        
+
         .card {
             background: white;
             padding: 30px;
@@ -31,16 +31,16 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
+
         h1 { color: #00254d; margin-bottom: 20px; }
         h2 { color: #005aa5; margin: 20px 0 10px; }
-        
+
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-        
+
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
         input, select {
@@ -50,7 +50,7 @@
             border-radius: 5px;
             font-size: 16px;
         }
-        
+
         button {
             background: #005aa5;
             color: white;
@@ -61,9 +61,22 @@
             font-size: 16px;
             margin-top: 10px;
         }
-        
+
         button:hover { background: #004080; }
-        
+
+        .btn-editar {
+            background: #f0ad4e;
+            padding: 6px 12px;
+            font-size: 13px;
+            margin: 0;
+        }
+        .btn-editar:hover { background: #ec971f; }
+
+        .btn-salvar-edicao {
+            background: #28a745;
+        }
+        .btn-salvar-edicao:hover { background: #218838; }
+
         .qr-result {
             text-align: center;
             padding: 20px;
@@ -72,31 +85,31 @@
             margin-top: 20px;
             display: none;
         }
-        
+
         .qr-code-img {
             max-width: 200px;
             margin: 20px auto;
             display: block;
         }
-        
+
         .clientes-list {
             margin-top: 30px;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        
+
         th, td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-        
+
         th { background: #f5f5f5; color: #00254d; }
-        
+
         .copy-btn {
             background: #4ca146;
             padding: 5px 10px;
@@ -107,17 +120,17 @@
             cursor: pointer;
             color: white;
         }
-        
+
         .alert {
             padding: 15px;
             border-radius: 5px;
             margin: 10px 0;
             display: none;
         }
-        
+
         .alert.success { background: #e6f8e6; color: #2e7d32; border: 1px solid #c8e6c9; }
         .alert.error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
-        
+
         .logout-btn {
             background: #c62828;
             padding: 8px 15px;
@@ -127,6 +140,27 @@
             font-size: 14px;
         }
         .logout-btn:hover { background: #b71c1c; }
+
+        .editar-form {
+            display: none;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+        }
+
+        .editar-form.ativo {
+            display: block;
+        }
+
+        .editar-form .form-grid {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .editar-form button {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -140,57 +174,57 @@
                 <a href="javascript:void(0)" onclick="fazerLogout()" class="logout-btn">🚪 Sair</a>
             </div>
         </header>
-        
+
         <div class="card">
             <h1>📋 Cadastro de Novo Cliente</h1>
-            
+
             <div class="alert success" id="alert-success"></div>
             <div class="alert error" id="alert-error"></div>
-            
+
             <div class="form-grid">
                 <div class="form-group">
                     <label>Nome *</label>
                     <input type="text" id="nome" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Sobrenome *</label>
                     <input type="text" id="sobrenome" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>RNM (Registro) *</label>
                     <input type="text" id="rnm" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Data de Nascimento *</label>
                     <input type="date" id="data_nascimento" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Nacionalidade *</label>
                     <input type="text" id="nacionalidade" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Data de Validade *</label>
                     <input type="date" id="data_validade" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>E-mail</label>
                     <input type="email" id="email">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Telefone</label>
                     <input type="tel" id="telefone">
                 </div>
             </div>
-            
+
             <button onclick="cadastrarCliente()">✅ Cadastrar Cliente e Gerar QR Code</button>
-            
+
             <div class="qr-result" id="qr-result">
                 <h2>🎉 Cliente Cadastrado com Sucesso!</h2>
                 <img id="qr-image" class="qr-code-img">
@@ -201,7 +235,7 @@
                 <button onclick="imprimirQRCode()">🖨️ Imprimir QR Code</button>
             </div>
         </div>
-        
+
         <div class="card clientes-list">
             <h2>👥 Clientes Cadastrados</h2>
             <div id="lista-clientes">
@@ -212,44 +246,41 @@
 
     <script>
         // ============================================
-        // VERIFICAÇÃO DE LOGIN (IMPORTANTE!)
+        // VERIFICAÇÃO DE LOGIN
         // ============================================
-        
-        // Verificar se está logado
+
         function verificarLogin() {
             const logado = localStorage.getItem('admin_logado');
             const loginTime = localStorage.getItem('login_time');
-            
+
             if (logado !== 'true' || !loginTime) {
                 window.location.href = 'login.html';
                 return false;
             }
-            
-            // Verificar se passou 8 horas
+
             const agora = new Date().getTime();
             const horasPassadas = (agora - parseInt(loginTime)) / (1000 * 60 * 60);
-            
+
             if (horasPassadas >= 8) {
                 localStorage.removeItem('admin_logado');
                 localStorage.removeItem('login_time');
                 window.location.href = 'login.html';
                 return false;
             }
-            
+
             return true;
         }
-        
-        // Fazer logout
+
         function fazerLogout() {
             localStorage.removeItem('admin_logado');
             localStorage.removeItem('login_time');
             window.location.href = 'login.html';
         }
-        
+
         // ============================================
         // CADASTRAR CLIENTE
         // ============================================
-        
+
         async function cadastrarCliente() {
             const cliente = {
                 nome: document.getElementById('nome').value.trim(),
@@ -262,22 +293,21 @@
                 telefone: document.getElementById('telefone').value.trim()
             };
 
-            // Validação
             if (!cliente.nome || !cliente.sobrenome || !cliente.rnm) {
                 showError('Preencha os campos obrigatórios (nome, sobrenome, RNM)');
                 return;
             }
-            
+
             if (!cliente.data_nascimento) {
                 showError('Selecione a data de nascimento');
                 return;
             }
-            
+
             if (!cliente.nacionalidade) {
                 showError('Preencha a nacionalidade');
                 return;
             }
-            
+
             if (!cliente.data_validade) {
                 showError('Selecione a data de validade');
                 return;
@@ -285,7 +315,7 @@
 
             try {
                 showSuccess('Cadastrando...');
-                
+
                 const response = await fetch('/api/clientes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -300,14 +330,12 @@
 
                 if (result.sucesso) {
                     showSuccess('Cliente cadastrado com sucesso!');
-                    
-                    // Mostrar QR Code
+
                     document.getElementById('qr-result').style.display = 'block';
                     document.getElementById('qr-image').src = result.qr_code_image;
                     document.getElementById('qr-link').textContent = result.link_qr;
                     document.getElementById('qr-code').textContent = result.codigo_qr;
-                    
-                    // Limpar formulário
+
                     document.getElementById('nome').value = '';
                     document.getElementById('sobrenome').value = '';
                     document.getElementById('rnm').value = '';
@@ -316,8 +344,7 @@
                     document.getElementById('data_validade').value = '';
                     document.getElementById('email').value = '';
                     document.getElementById('telefone').value = '';
-                    
-                    // Atualizar lista
+
                     carregarClientes();
                 } else {
                     showError(result.erro || 'Erro ao cadastrar cliente');
@@ -329,29 +356,82 @@
         }
 
         // ============================================
-        // LISTAR CLIENTES
+        // EDITAR CLIENTE
         // ============================================
-        
+
+        function abrirEdicao(id) {
+            // Esconde todos os formulários de edição abertos
+            document.querySelectorAll('.editar-form').forEach(el => el.classList.remove('ativo'));
+
+            // Mostra o formulário específico
+            const form = document.getElementById(`editar-form-${id}`);
+            if (form) {
+                form.classList.toggle('ativo');
+            }
+        }
+
+        async function salvarEdicao(id) {
+            const cliente = {
+                nome: document.getElementById(`edit-nome-${id}`).value.trim(),
+                sobrenome: document.getElementById(`edit-sobrenome-${id}`).value.trim(),
+                rnm: document.getElementById(`edit-rnm-${id}`).value.trim(),
+                data_nascimento: document.getElementById(`edit-data_nascimento-${id}`).value,
+                nacionalidade: document.getElementById(`edit-nacionalidade-${id}`).value.trim(),
+                data_validade: document.getElementById(`edit-data_validade-${id}`).value,
+                email: document.getElementById(`edit-email-${id}`).value.trim(),
+                telefone: document.getElementById(`edit-telefone-${id}`).value.trim()
+            };
+
+            try {
+                const response = await fetch(`/api/clientes/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cliente)
+                });
+
+                const result = await response.json();
+
+                if (result.sucesso) {
+                    showSuccess('Cliente atualizado com sucesso!');
+                    carregarClientes();
+                } else {
+                    showError(result.erro || 'Erro ao atualizar cliente');
+                }
+            } catch (error) {
+                showError('Erro de conexão: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // CARREGAR LISTA DE CLIENTES
+        // ============================================
+
         async function carregarClientes() {
             try {
                 const response = await fetch('/api/clientes');
-                
+
                 if (!response.ok) {
                     throw new Error('Erro na resposta');
                 }
-                
+
                 const result = await response.json();
-                
+
                 if (result.sucesso) {
                     if (result.clientes.length === 0) {
                         document.getElementById('lista-clientes').innerHTML = '<p>Nenhum cliente cadastrado ainda.</p>';
                     } else {
                         let html = `<table>
                             <thead>
-                                <tr><th>Nome</th><th>RNM</th><th>Nacionalidade</th><th>Validade</th><th>QR Code</th></tr>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>RNM</th>
+                                    <th>Nacionalidade</th>
+                                    <th>Validade</th>
+                                    <th>Ações</th>
+                                </tr>
                             </thead>
                             <tbody>`;
-                        
+
                         result.clientes.forEach(cliente => {
                             html += `
                                 <tr>
@@ -360,14 +440,60 @@
                                     <td>${cliente.nacionalidade || '-'}</td>
                                     <td>${formatarData(cliente.data_validade)}</td>
                                     <td>
+                                        <button class="btn-editar" onclick="abrirEdicao(${cliente.id})">
+                                            ✏️ Editar
+                                        </button>
                                         <button class="copy-btn" onclick="copiarLinkCliente('${cliente.codigo_qr}')">
                                             📋 Copiar Link
                                         </button>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="editar-form" id="editar-form-${cliente.id}">
+                                            <h4 style="margin-bottom: 10px; color:#005aa5;">✏️ Editando ${cliente.nome} ${cliente.sobrenome}</h4>
+                                            <div class="form-grid">
+                                                <div class="form-group">
+                                                    <label>Nome</label>
+                                                    <input type="text" id="edit-nome-${cliente.id}" value="${cliente.nome || ''}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Sobrenome</label>
+                                                    <input type="text" id="edit-sobrenome-${cliente.id}" value="${cliente.sobrenome || ''}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>RNM</label>
+                                                    <input type="text" id="edit-rnm-${cliente.id}" value="${cliente.rnm || ''}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Nascimento</label>
+                                                    <input type="date" id="edit-data_nascimento-${cliente.id}" value="${cliente.data_nascimento || ''}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Nacionalidade</label>
+                                                    <input type="text" id="edit-nacionalidade-${cliente.id}" value="${cliente.nacionalidade || ''}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Validade</label>
+                                                    <input type="date" id="edit-data_validade-${cliente.id}" value="${cliente.data_validade || ''}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>E-mail</label>
+                                                    <input type="email" id="edit-email-${cliente.id}" value="${cliente.email || ''}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Telefone</label>
+                                                    <input type="tel" id="edit-telefone-${cliente.id}" value="${cliente.telefone || ''}">
+                                                </div>
+                                            </div>
+                                            <button class="btn-salvar-edicao" onclick="salvarEdicao(${cliente.id})">💾 Salvar Alterações</button>
+                                            <button onclick="abrirEdicao(${cliente.id})">❌ Cancelar</button>
+                                        </div>
+                                    </td>
+                                </tr>
                             `;
                         });
-                        
+
                         html += `</tbody></table>`;
                         document.getElementById('lista-clientes').innerHTML = html;
                     }
@@ -381,7 +507,7 @@
         // ============================================
         // FUNÇÕES AUXILIARES
         // ============================================
-        
+
         function formatarData(dataString) {
             if (!dataString) return '';
             try {
@@ -442,7 +568,7 @@
         // ============================================
         // INICIALIZAR
         // ============================================
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             if (verificarLogin()) {
                 carregarClientes();
