@@ -1,224 +1,252 @@
+
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Polícia Federal - Validador</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8" />
+   
+    <link rel="icon" type="image/png" href="feda.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Validador de autenticidade de documento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #f2f2f2;
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #555;
+    padding: 40px 16px;
+  }
+  .container { max-width: 640px; margin: 0 auto; }
+  .badge { display: flex; justify-content: center; }
+  .badge img { height: 89px; width: auto; max-width: 100%; object-fit: contain; }
+  h1 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #656565;
+    margin: 24px 0 32px;
+    width: 100%;
+  }
+  h1.result { font-weight: 600; }
 
-    body {
-      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: #f0f0f0; /* UM POUCO MAIS ESCURO */
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      padding: 30px 16px 16px 16px;
-    }
+  .input-wrap { max-width: 35rem; margin: -18px auto 0; }
 
-    .container { max-width: 400px; width: 100%; text-align: center; }
-    .logo { margin: 12px 0 10px; }
+  /* estado vazio */
+  .input-empty {
+    width: 100%;
+    border: 0px solid #ccc;
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    outline: none;
+    font-family: inherit;
+  }
+  .input-empty::placeholder { color: #333; font-weight: 700; }
+  .input-empty:focus {
+    border-color: #66afe9;
+    box-shadow: 0 0 8px rgba(102,175,233,0.4);
+  }
 
-    .logo-img {
-      width: 220px;
-      height: auto;
-      mix-blend-mode: multiply;
-    }
+  /* estado ativo (com valor) */
+  .input-active {
+    background: #fff;
+    border: 1px solid #66afe9;
+    border-radius: 4px;
+    padding: 2px 7.5px 2.5px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+  }
+  .input-active label {
+    display: block;
+    font-size: 9px;
+    color: #777;
+    line-height: 1;
+  }
+  .input-active input {
+    width: 100%;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    line-height: 1.52857;
+    color: #3a3f51;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+  }
 
-    .titulo-validador {
-      font-size: 20px;
-      font-weight: 700;
-      color: #1a1a1a;
-      margin-bottom: 20px;
-      line-height: 1.3;
-      text-align: center;
-    }
+  .buttons { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+  .btn {
+ 
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 0px 1px rgba(0,0,0,0.05);
+    margin-top: -7px;
+  }
+  .btn-primary {
+    color: #fff;
+    background-color: #5d9cec;
+    border-color: #5899eb;
+    border: 0px solid rgba(204,204,204,0.7);
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    white-space: nowrap;
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 3px;
+   
+  }
+  .btn-primary:hover { background: rgba(51,122,183,0.8); }
+  .btn-default {
+    background: #F0F0F0;
+    color: rgba(51,51,51,0.7);
+    border: 0px solid rgba(204,204,204,0.7);
+  }
+  .btn-default:hover { background: rgba(230,230,230,0.7); }
 
-    .codigo-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 300px; /* REDUZIDO */
-      margin: 0 auto 10px auto;
-    }
+  /* result */
+  .result-wrap { max-width: 72rem; margin: 32px auto 0; padding: 0 16px; color: #555; }
+  .result-wrap h2 { font-size: 18px; font-weight: 700; margin: 0 0 16px; }
+  .field {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 16px;
+  }
+  .field .label { font-weight: 700; color: #555; }
+  .field .value { color: #666; }
+  .voltar-wrap { display: flex; justify-content: center; margin-top: 32px; }
+  .btn-voltar {
+    background: #eee;
+    color: #337ab7;
+    border: none;
+    padding: 8px 64px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .btn-voltar:hover { background: #e2e2e2; }
 
-    .codigo-label {
-      position: absolute;
-      top: 6px;
-      left: 10px;
-      font-size: 10px;
-      color: #888;
-      font-weight: 500;
-      pointer-events: none;
-      letter-spacing: 0.3px;
-    }
-
-    .codigo-input {
-      width: 100%;
-      padding: 22px 10px 8px 10px; /* REDUZIDO */
-      font-size: 12px; /* REDUZIDO */
-      font-family: monospace;
-      border: 1.5px solid #4d8bf2;
-      border-radius: 8px;
-      background: #f9f9f9;
-      color: #222;
-    }
-
-    .codigo-input:focus {
-      outline: none;
-      border-color: #4d8bf2;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(77, 139, 242, 0.15);
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-      margin: 0 auto 10px auto;
-    }
-
-    .btn-validar {
-      padding: 8px 22px;
-      background: #4d8bf2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      min-width: 80px;
-    }
-
-    .btn-validar:hover { background: #3a7ae0; }
-
-    .btn-limpar {
-      padding: 8px 22px;
-      background: #4d8bf2; /* MESMA COR DO VALIDAR */
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      min-width: 80px;
-    }
-
-    .btn-limpar:hover { background: #3a7ae0; }
-
-    .loading { display: none !important; }
-
-    .error-message {
-      display: none;
-      margin: 12px auto;
-      padding: 10px;
-      background: #ffebee;
-      color: #c62828;
-      border-radius: 6px;
-      font-size: 13px;
-      width: 100%;
-      max-width: 300px; /* ACOMPANHA A CAIXA */
-    }
-
-    @media (max-width: 480px) {
-      body { padding: 20px 14px 14px 14px; }
-      .container { max-width: 100%; }
-      .logo-img { width: 180px; }
-      .titulo-validador { font-size: 18px; margin-bottom: 16px; }
-      .codigo-wrapper { max-width: 270px; }
-      .codigo-input { font-size: 11px; padding: 20px 8px 6px 8px; }
-      .buttons { gap: 5px; }
-      .btn-validar, .btn-limpar { font-size: 13px; padding: 7px 16px; min-width: 65px; }
-      .error-message { max-width: 270px; }
-    }
-
-    @media (max-width: 380px) {
-      .logo-img { width: 150px; }
-      .titulo-validador { font-size: 16px; }
-      .codigo-wrapper { max-width: 230px; }
-      .buttons { gap: 4px; flex-direction: column; align-items: center; }
-      .btn-validar, .btn-limpar { width: 100%; max-width: 180px; min-width: unset; padding: 8px; }
-      .error-message { max-width: 230px; }
-    }
-  </style>
+  .hidden { display: none; }
+</style>
 </head>
 <body>
+
 <div class="container">
-  <div class="logo">
-    <img src="Federal.png" class="logo-img" alt="PF"
-         onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Bras%C3%A3o_PF_Brasil.svg/200px-Bras%C3%A3o_PF_Brasil.svg.png'">
+  <div class="badge">
+    <img id="badge" src="feda.PNG" alt="Polícia Federal" />
   </div>
 
-  <div class="titulo-validador">Validador de autenticidade<br>de documento</div>
+  <!-- FORM VIEW -->
+  <div id="form-view">
+    <h1>Validador de autenticidade de documento</h1>
 
-  <div class="codigo-wrapper">
-    <div class="codigo-label">Código Verificador</div>
-    <input type="text" id="codigoInput" class="codigo-input" autocomplete="off">
+    <form id="form" class="input-wrap">
+      <!-- empty -->
+      <input id="input-empty" class="input-empty" type="text" placeholder="Código Verificador">
+
+      <!-- active -->
+      <div id="input-active" class="input-active hidden">
+        <label for="input-filled">Código Verificador</label>
+        <input id="input-filled" type="text" autocomplete="off">
+      </div>
+
+      <div class="buttons">
+        <button type="submit" class="btn btn-primary">Validar</button>
+        <button type="button" id="btn-limpar" class="btn btn-default">Limpar</button>
+      </div>
+    </form>
   </div>
 
-  <div class="buttons">
-    <button class="btn-validar" onclick="validarCodigo()">Validar</button>
-    <button class="btn-limpar" onclick="limparCampo()">Limpar</button>
+  <!-- RESULT VIEW -->
+  <div id="result-view" class="hidden">
+    <h1 class="result">Documento autêntico</h1>
   </div>
+</div>
 
-  <div id="loading" class="loading"></div>
-  <div id="errorMessage" class="error-message">❌ Documento não encontrado</div>
+<div id="result-data" class="result-wrap hidden">
+  <h2>Dados do documento</h2>
+  <div class="field"><div class="label">Situacao:</div><div class="value" id="f-situacao"></div></div>
+  <div class="field"><div class="label">Código:</div><div class="value" id="f-codigo"></div></div>
+  <div class="field"><div class="label">Nome:</div><div class="value" id="f-nome"></div></div>
+  <div class="field"><div class="label">Sobrenome:</div><div class="value" id="f-sobrenome"></div></div>
+  <div class="field"><div class="label">RNM:</div><div class="value" id="f-rnm"></div></div>
+  <div class="field"><div class="label">Data de nascimento:</div><div class="value" id="f-nascimento"></div></div>
+  <div class="field"><div class="label">Nacionalidade:</div><div class="value" id="f-nacionalidade"></div></div>
+
+  <div class="voltar-wrap">
+    <button id="btn-voltar" class="btn-voltar">Voltar</button>
+  </div>
 </div>
 
 <script>
-  function getCodigoDaURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    let codigo = urlParams.get('codigo');
-    if (!codigo) {
-      const path = window.location.pathname;
-      const partes = path.split('/');
-      if (partes.includes('verificar')) codigo = partes[partes.length - 1];
-    }
-    return codigo;
+  const MOCK = {
+   
+  };
+
+  const inputEmpty  = document.getElementById('input-empty');
+  const inputActive = document.getElementById('input-active');
+  const inputFilled = document.getElementById('input-filled');
+  const form        = document.getElementById('form');
+  const formView    = document.getElementById('form-view');
+  const resultView  = document.getElementById('result-view');
+  const resultData  = document.getElementById('result-data');
+
+  function switchToActive() {
+    inputEmpty.classList.add('hidden');
+    inputActive.classList.remove('hidden');
+    inputFilled.value = inputEmpty.value;
+    inputFilled.focus();
+  }
+  function switchToEmpty() {
+    inputActive.classList.add('hidden');
+    inputEmpty.classList.remove('hidden');
+    inputEmpty.value = '';
+    inputFilled.value = '';
   }
 
-  async function validarCodigo() {
-    let codigo = document.getElementById('codigoInput').value.trim();
-    if (!codigo) codigo = getCodigoDaURL();
-    if (!codigo) { mostrarErro('Digite o código do documento'); return; }
-
-    document.getElementById('errorMessage').style.display = 'none';
-
-    try {
-      const resposta = await fetch(`/api/cliente/${encodeURIComponent(codigo)}`);
-      const dados = await resposta.json();
-      if (dados.sucesso && dados.cliente) {
-        document.getElementById('codigoInput').value = '';
-        window.location.href = `/cliente.html?codigo=${encodeURIComponent(codigo)}`;
-      } else {
-        mostrarErro('Documento não encontrado');
-      }
-    } catch (erro) {
-      mostrarErro('Erro de conexão');
-    }
-  }
-
-  function limparCampo() {
-    document.getElementById('codigoInput').value = '';
-    document.getElementById('errorMessage').style.display = 'none';
-    document.getElementById('codigoInput').focus();
-  }
-
-  function mostrarErro(msg) {
-    const errorDiv = document.getElementById('errorMessage');
-    errorDiv.textContent = `❌ ${msg}`;
-    errorDiv.style.display = 'block';
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const codigoURL = getCodigoDaURL();
-    if (codigoURL) document.getElementById('codigoInput').value = codigoURL;
+  inputEmpty.addEventListener('input', () => {
+    if (inputEmpty.value.length > 0) switchToActive();
+  });
+  inputFilled.addEventListener('input', () => {
+    if (inputFilled.value.length === 0) switchToEmpty();
   });
 
-  document.getElementById('codigoInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') validarCodigo();
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = inputFilled.value || inputEmpty.value;
+    if (!val.trim()) return;
+
+    document.getElementById('f-situacao').textContent    = MOCK.situacao;
+    document.getElementById('f-codigo').textContent      = MOCK.codigo;
+    document.getElementById('f-nome').textContent        = MOCK.nome;
+    document.getElementById('f-sobrenome').textContent   = MOCK.sobrenome;
+    document.getElementById('f-rnm').textContent         = MOCK.rnm;
+    document.getElementById('f-nascimento').textContent  = MOCK.nascimento;
+    document.getElementById('f-nacionalidade').textContent = MOCK.nacionalidade;
+
+    formView.classList.add('hidden');
+    resultView.classList.remove('hidden');
+    resultData.classList.remove('hidden');
+  });
+
+  document.getElementById('btn-limpar').addEventListener('click', switchToEmpty);
+
+  document.getElementById('btn-voltar').addEventListener('click', () => {
+    resultView.classList.add('hidden');
+    resultData.classList.add('hidden');
+    formView.classList.remove('hidden');
+    switchToEmpty();
   });
 </script>
 </body>
