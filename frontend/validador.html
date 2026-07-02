@@ -137,6 +137,13 @@
     errorDiv.style.display = "block";
   }
 
+  // Preenche a caixa se vier do QR code (?codigo=xxx)
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const codigoURL = urlParams.get("codigo");
+    if (codigoURL) document.getElementById("codigoInput").value = codigoURL;
+  });
+
   document.getElementById("codigoInput").addEventListener("keypress", function(e) {
     if (e.key === "Enter") validarCodigo();
   });
