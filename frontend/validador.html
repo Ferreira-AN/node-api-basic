@@ -33,7 +33,7 @@
       pointer-events: none; letter-spacing: 0.3px;
     }
     .codigo-input {
-      width: 100%; padding: 8px 12px; font-size: 14px;
+      width: 100%; padding: 22px 12px 8px 12px; font-size: 14px;
       font-family: monospace; border: 1.5px solid #4d8bf2;
       border-radius: 8px; background: #f9f9f9; color: #222;
     }
@@ -66,7 +66,7 @@
       .logo-img { width: 75px; }
       .titulo-validador { font-size: 18px; margin-bottom: 16px; }
       .codigo-wrapper { max-width: 270px; }
-      .codigo-input { font-size: 11px; padding: 20px 8px 6px 8px; }
+      .codigo-input { font-size: 11px; padding: 22px 8px 6px 8px; }
       .buttons { gap: 5px; }
       .btn-validar, .btn-limpar { font-size: 13px; padding: 7px 16px; min-width: 65px; }
       .error-message { max-width: 270px; }
@@ -100,44 +100,43 @@
   <div id="errorMessage" class="error-message">❌ Documento não encontrado</div>
 </div>
 <script>
-  function getCodigoDaURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    let codigo = urlParams.get("codigo");
-    if (!codigo) {
-      const path = window.location.pathname;
-      const partes = path.split("/");
-      if (partes.includes("verificar")) codigo = partes[partes.length - 1];
-    }
-    return codigo;
-  }
   async function validarCodigo() {
-    let codigo = document.getElementById("codigoInput").value.trim();
-    if (!codigo) codigo = getCodigoDaURL();
-    if (!codigo) { mostrarErro("Digite o código do documento"); return; }
+    const codigo = document.getElementById("codigoInput").value.trim();
+
+    // Se caixa vazia, não faz nada
+    if (!codigo) {
+      mostrarErro("Digite o código do documento");
+      return;
+    }
+
     document.getElementById("errorMessage").style.display = "none";
+
     try {
       const resposta = await fetch("/api/cliente/" + encodeURIComponent(codigo));
       const dados = await resposta.json();
       if (dados.sucesso && dados.cliente) {
         document.getElementById("codigoInput").value = "";
         window.location.href = "/cliente.html?codigo=" + encodeURIComponent(codigo);
-      } else { mostrarErro("Documento não encontrado"); }
-    } catch (erro) { mostrarErro("Erro de conexão"); }
+      } else {
+        mostrarErro("Documento não encontrado");
+      }
+    } catch (erro) {
+      mostrarErro("Erro de conexão");
+    }
   }
+
   function limparCampo() {
     document.getElementById("codigoInput").value = "";
     document.getElementById("errorMessage").style.display = "none";
     document.getElementById("codigoInput").focus();
   }
+
   function mostrarErro(msg) {
     const errorDiv = document.getElementById("errorMessage");
     errorDiv.textContent = "❌ " + msg;
     errorDiv.style.display = "block";
   }
-  document.addEventListener("DOMContentLoaded", function() {
-    const codigoURL = getCodigoDaURL();
-    if (codigoURL) document.getElementById("codigoInput").value = codigoURL;
-  });
+
   document.getElementById("codigoInput").addEventListener("keypress", function(e) {
     if (e.key === "Enter") validarCodigo();
   });
