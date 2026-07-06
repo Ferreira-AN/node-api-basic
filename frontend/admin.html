@@ -126,6 +126,42 @@
             color: white;
         }
 
+        .delete-btn {
+            background: #c62828;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            color: white;
+            margin-top: 0;
+        }
+        .delete-btn:hover { background: #b71c1c; }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 9px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        .search-box input:focus {
+            border-color: #005aa5;
+            outline: none;
+        }
+        .search-count {
+            font-size: 13px;
+            color: #888;
+            white-space: nowrap;
+        }
+
         .alert {
             padding: 15px;
             border-radius: 5px;
@@ -244,6 +280,10 @@
 
         <div class="card clientes-list">
             <h2>👥 Clientes Cadastrados</h2>
+            <div class="search-box">
+                <input type="text" id="pesquisa" placeholder="🔍 Pesquisar por nome ou RNM..." oninput="filtrarClientes()">
+                <span class="search-count" id="search-count"></span>
+            </div>
             <div id="lista-clientes">
                 <p>Carregando lista de clientes...</p>
             </div>
@@ -461,7 +501,7 @@
                             const dataValidade = cliente.data_validade || '';
 
                             html += `
-                                <tr>
+                                <tr class="linha-cliente" data-busca="${(cliente.nome + ' ' + cliente.sobrenome + ' ' + (cliente.rnm || '')).toLowerCase()}">
                                     <td><strong>${cliente.nome} ${cliente.sobrenome}</strong></td>
                                     <td>${cliente.rnm || '-'}</td>
                                     <td>${cliente.nacionalidade || '-'}</td>
@@ -473,9 +513,12 @@
                                         <button class="copy-btn" onclick="copiarLinkCliente('${cliente.codigo_qr}')">
                                             📋 Copiar Link
                                         </button>
+                                        <button class="delete-btn" onclick="deletarCliente(${cliente.id}, '${cliente.nome} ${cliente.sobrenome}')">
+                                            🗑️ Remover
+                                        </button>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr class="linha-edicao">
                                     <td colspan="5" style="padding: 0;">
                                         <div class="editar-form" id="editar-form-${cliente.id}">
                                             <h4 style="margin-bottom: 10px; color:#005aa5;">✏️ Editando ${cliente.nome} ${cliente.sobrenome}</h4>
@@ -525,6 +568,10 @@
 
                         html += `</tbody></table>`;
                         document.getElementById('lista-clientes').innerHTML = html;
+                        const total = result.clientes.length;
+                        document.getElementById('search-count').textContent = `${total} cadastrados`;
+                        // reaplica filtro se houver texto
+                        if (document.getElementById('pesquisa').value) filtrarClientes();
                     }
                 }
             } catch (error) {
@@ -592,6 +639,52 @@
                 </html>
             `);
             printWindow.document.close();
+        }
+
+        // ============================================
+        // DELETAR CLIENTE
+        // ============================================
+
+        async function deletarCliente(id, nome) {
+            if (!confirm(`Tem certeza que deseja remover "${nome}"?\nEsta ação não pode ser desfeita.`)) return;
+            try {
+                const response = await fetch(`/api/clientes/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const result = await response.json();
+                if (result.sucesso) {
+                    showSuccess('✅ Cliente removido com sucesso!');
+                    carregarClientes();
+                } else {
+                    showError(result.erro || 'Erro ao remover cliente');
+                }
+            } catch (error) {
+                showError('Erro de conexão: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // PESQUISA / FILTRO
+        // ============================================
+
+        let todosClientes = [];
+
+        function filtrarClientes() {
+            const termo = document.getElementById('pesquisa').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#lista-clientes tbody tr.linha-cliente');
+            let visiveis = 0;
+            rows.forEach(row => {
+                const texto = row.getAttribute('data-busca') || '';
+                const visivel = !termo || texto.includes(termo);
+                row.style.display = visivel ? '' : 'none';
+                // também esconde/mostra o form de edição abaixo
+                const next = row.nextElementSibling;
+                if (next && next.classList.contains('linha-edicao')) {
+                    next.style.display = visivel ? '' : 'none';
+                }
+                if (visivel) visiveis++;
+            });
+            const total = rows.length;
+            document.getElementById('search-count').textContent = termo ? `${visiveis} de ${total} encontrados` : `${total} cadastrados`;
         }
 
         // ============================================
