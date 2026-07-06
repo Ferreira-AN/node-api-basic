@@ -186,8 +186,11 @@
 
     function formatarData(dataStr) {
       if (!dataStr) return '';
-      try { return new Date(dataStr).toLocaleDateString('pt-BR'); }
-      catch { return dataStr; }
+      try {
+        // Força interpretação como data local (sem fuso horário)
+        const [ano, mes, dia] = dataStr.substring(0, 10).split('-');
+        return dia + '/' + mes + '/' + ano;
+      } catch { return dataStr; }
     }
 
     function capitalizar(texto) {
@@ -208,9 +211,10 @@
           const c = dados.cliente;
 
           const hoje = new Date();
-          const validade = new Date(c.data_validade);
           hoje.setHours(0,0,0,0);
-          validade.setHours(0,0,0,0);
+          // Força data local sem fuso horário
+          const [vAno, vMes, vDia] = c.data_validade.substring(0, 10).split('-');
+          const validade = new Date(vAno, vMes - 1, vDia);
 
           const dataFormatada = formatarData(c.data_validade);
           document.getElementById('validade').textContent = validade >= hoje
