@@ -260,6 +260,23 @@ app.put('/api/clientes/:id', (req, res) => {
 });
 
 
+// API: Deletar cliente
+app.delete('/api/clientes/:id', (req, res) => {
+  const id = req.params.id;
+  console.log(`🗑️ Deletando cliente ID: ${id}`);
+  db.run('DELETE FROM clientes WHERE id = ?', [id], function(err) {
+    if (err) {
+      console.error('❌ Erro ao deletar:', err.message);
+      return res.status(500).json({ erro: 'Erro ao deletar: ' + err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ erro: 'Cliente não encontrado' });
+    }
+    console.log(`✅ Cliente ${id} deletado com sucesso!`);
+    res.json({ sucesso: true, mensagem: 'Cliente removido com sucesso!' });
+  });
+});
+
 // ============================================
 // INICIAR SERVIDOR
 // ============================================
