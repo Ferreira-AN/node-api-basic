@@ -451,6 +451,8 @@
                     document.getElementById(`editar-form-${id}`).classList.remove('ativo');
                     // Recarrega a lista
                     carregarClientes();
+                    // Gera e exibe o QR code atualizado
+                    await exibirQRAtualizado(id);
                 } else {
                     showError(result.erro || 'Erro ao atualizar cliente');
                 }
@@ -463,6 +465,40 @@
         function cancelarEdicao(id) {
             document.getElementById(`editar-form-${id}`).classList.remove('ativo');
             showSuccess('Edição cancelada');
+        }
+
+        // ============================================
+        // EXIBIR QR CODE APÓS EDIÇÃO
+        // ============================================
+
+        async function exibirQRAtualizado(id) {
+            try {
+                // Busca os dados atualizados do cliente
+                const response = await fetch('/api/clientes');
+                const result = await response.json();
+                const cliente = result.clientes.find(c => c.id === id);
+                if (!cliente) return;
+
+                // Gera o QR code com o mesmo link que já existe
+                const linkQR = window.location.origin + `/validador?codigo=${cliente.codigo_qr}`;
+
+                // Usa a API de QR do servidor para gerar a imagem
+                const qrResponse = await fetch(`/api/qrcode?link=${encodeURIComponent(linkQR)}`);
+                const qrData = await qrResponse.json();
+
+                // Exibe no painel de resultado
+                const qrResult = document.getElementById('qr-result');
+                qrResult.querySelector('h2').textContent = '✅ QR Code Atualizado!';
+                document.getElementById('qr-image').src = qrData.qr_code_image;
+                document.getElementById('qr-link').textContent = linkQR;
+                document.getElementById('qr-code').textContent = cliente.codigo_qr;
+                qrResult.style.display = 'block';
+
+                // Scroll até o QR
+                qrResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch (err) {
+                console.error('Erro ao gerar QR atualizado:', err);
+            }
         }
 
         // ============================================
