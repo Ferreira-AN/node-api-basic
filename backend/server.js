@@ -260,6 +260,18 @@ app.put('/api/clientes/:id', (req, res) => {
 });
 
 
+// API: Gerar QR Code por link
+app.get('/api/qrcode', async (req, res) => {
+  const link = req.query.link;
+  if (!link) return res.status(400).json({ erro: 'Link obrigatório' });
+  try {
+    const qrData = await QRCode.toDataURL(link);
+    res.json({ sucesso: true, qr_code_image: qrData });
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao gerar QR: ' + err.message });
+  }
+});
+
 // API: Deletar cliente
 app.delete('/api/clientes/:id', (req, res) => {
   const id = req.params.id;
