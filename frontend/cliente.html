@@ -199,9 +199,7 @@
     }
 
     async function carregarCliente() {
-      // Tenta pegar da URL, senão recupera do sessionStorage (ao atualizar página)
-      let codigo = getCodigoDaURL();
-      if (!codigo) codigo = sessionStorage.getItem('ultimo_codigo');
+      const codigo = getCodigoDaURL();
       if (!codigo) { alert('Código inválido'); window.location.href = '/'; return; }
 
       try {
@@ -230,8 +228,6 @@
           document.getElementById('nascimento').textContent = formatarData(c.data_nascimento);
           document.getElementById('nacionalidade').textContent = c.nacionalidade ? capitalizar(c.nacionalidade) : '-';
 
-          // Salva o código no sessionStorage para recuperar ao atualizar
-          sessionStorage.setItem('ultimo_codigo', codigo);
           window.history.replaceState({}, '', '/');
 
         } else {
@@ -248,4 +244,3 @@
   </script>
 </body>
 </html>
-   
