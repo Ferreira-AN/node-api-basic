@@ -125,6 +125,11 @@ app.get('/cliente.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
 });
 
+// Rota limpa para o cliente (sem código na URL — ao atualizar página)
+app.get('/documento', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
+});
+
 // Rota antiga (mantém compatibilidade)
 app.get('/verificar/:codigo', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/cliente.html'));
