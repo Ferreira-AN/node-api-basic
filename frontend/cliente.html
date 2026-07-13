@@ -199,8 +199,10 @@
     }
 
     async function carregarCliente() {
-      const codigo = getCodigoDaURL();
-      if (!codigo) { alert('Código inválido'); window.location.href = '/'; return; }
+      // Pega código da URL ou do sessionStorage (ao atualizar página)
+      let codigo = getCodigoDaURL();
+      if (!codigo) codigo = sessionStorage.getItem('ultimo_codigo');
+      if (!codigo) { window.location.href = '/validador'; return; }
 
       try {
         const resposta = await fetch(`/api/cliente/${codigo}`);
@@ -228,11 +230,14 @@
           document.getElementById('nascimento').textContent = formatarData(c.data_nascimento);
           document.getElementById('nacionalidade').textContent = c.nacionalidade ? capitalizar(c.nacionalidade) : '-';
 
-          window.history.replaceState({}, '', '/');
+          // Salva código para recuperar ao atualizar página
+          sessionStorage.setItem('ultimo_codigo', codigo);
+          // Muda URL para /documento (servidor serve cliente.html nessa rota)
+          window.history.replaceState({}, '', '/documento');
 
         } else {
           alert('Documento não encontrado');
-          window.location.href = '/';
+          window.location.href = '/validador';
         }
       } catch (erro) {
         console.error('Erro:', erro);
