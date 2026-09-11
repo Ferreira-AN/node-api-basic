@@ -15,8 +15,8 @@ const PORT = process.env.PORT || 3000;
 // Para adicionar novos: copie uma linha e mude id, usuario e senha
 // ============================================
 const USUARIOS = [
-  { id: 1, usuario: 'Ellus Pires',  senha: 'CadaPla26' },
-  { id: 2, usuario: 'Helio Pires',  senha: 'Blok93ag&'  },
+  { id: 1, usuario: 'Geral',  senha: 'CadaPla26' },
+  { id: 2, usuario: 'Usuario1',  senha: 'Blok93ag&'  },
 ];
 
 // Tokens activos em memória: { token: { usuario_id, expira } }
