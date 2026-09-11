@@ -295,30 +295,27 @@
         // VERIFICAÇÃO DE LOGIN
         // ============================================
 
+        function getToken() {
+            return localStorage.getItem('admin_token');
+        }
+
         function verificarLogin() {
-            const logado = localStorage.getItem('admin_logado');
+            const token = getToken();
             const loginTime = localStorage.getItem('login_time');
-
-            if (logado !== 'true' || !loginTime) {
+            if (!token || !loginTime) { window.location.href = 'login.html'; return false; }
+            const horas = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (horas >= 8) {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_usuario');
                 window.location.href = 'login.html';
                 return false;
             }
-
-            const agora = new Date().getTime();
-            const horasPassadas = (agora - parseInt(loginTime)) / (1000 * 60 * 60);
-
-            if (horasPassadas >= 8) {
-                localStorage.removeItem('admin_logado');
-                localStorage.removeItem('login_time');
-                window.location.href = 'login.html';
-                return false;
-            }
-
             return true;
         }
 
         function fazerLogout() {
-            localStorage.removeItem('admin_logado');
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_usuario');
             localStorage.removeItem('login_time');
             window.location.href = 'login.html';
         }
@@ -364,7 +361,7 @@
 
                 const response = await fetch('/api/clientes', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'x-token': getToken() },
                     body: JSON.stringify(cliente)
                 });
 
@@ -439,7 +436,7 @@
 
                 const response = await fetch(`/api/clientes/${id}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'x-token': getToken() },
                     body: JSON.stringify(cliente)
                 });
 
@@ -474,7 +471,7 @@
         async function exibirQRAtualizado(id) {
             try {
                 // Busca os dados atualizados do cliente
-                const response = await fetch('/api/clientes');
+                const response = await fetch('/api/clientes', { headers: { 'x-token': getToken() } });
                 const result = await response.json();
                 const cliente = result.clientes.find(c => c.id === id);
                 if (!cliente) return;
@@ -507,11 +504,10 @@
 
         async function carregarClientes() {
             try {
-                const response = await fetch('/api/clientes');
-
-                if (!response.ok) {
-                    throw new Error('Erro na resposta');
-                }
+                const response = await fetch('/api/clientes', {
+                    headers: { 'x-token': getToken() }
+                });
+                if (!response.ok) { throw new Error('Erro na resposta'); }
 
                 const result = await response.json();
 
@@ -684,7 +680,7 @@
         async function deletarCliente(id, nome) {
             if (!confirm(`Tem certeza que deseja remover "${nome}"?\nEsta ação não pode ser desfeita.`)) return;
             try {
-                const response = await fetch(`/api/clientes/${id}`, { method: 'DELETE' });
+                const response = await fetch(`/api/clientes/${id}`, { method: 'DELETE', headers: { 'x-token': getToken() } });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const result = await response.json();
                 if (result.sucesso) {
